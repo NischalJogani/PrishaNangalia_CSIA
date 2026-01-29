@@ -1,0 +1,25 @@
+# Interior Design Project Management System
+# Python Requirements File
+
+# Core Framework
+streamlit>=1.28.0
+
+# Database
+mysql-connector-python>=8.0.33
+
+# Authentication & Security
+bcrypt>=4.0.1
+extra-streamlit-components>=0.1.60
+
+# Image Processing
+Pillow>=10.0.0
+
+# Drawing Canvas (Optional - for whiteboard feature)
+streamlit-drawable-canvas>=0.9.3
+
+# Standard Libraries (Usually included, but listed for reference)
+# datetime (built-in)
+# os (built-in)
+# secrets (built-in)
+# contextlib (built-in)
+# shutil (built-in)
