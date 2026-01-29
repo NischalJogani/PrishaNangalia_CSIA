@@ -40,6 +40,8 @@ venv.bak/
 # =====================================================
 .streamlit/
 *.streamlit/
+# IMPORTANT: Keep secrets file out of version control!
+.streamlit/secrets.toml
 
 # =====================================================
 # Uploaded Files & User Data

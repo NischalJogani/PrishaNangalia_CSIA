@@ -4,17 +4,29 @@ Contains database credentials and application settings
 """
 
 import os
+import streamlit as st
 
 # =====================================================
 # DATABASE CONFIGURATION
 # =====================================================
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',  # Change to your MySQL username
-    'password': 'CypherM1in!',  # Change to your MySQL password
-    'database': 'interior_designer_app_prisha_CSIA',  # Database name
-    'port': 3306
-}
+# Try to load from Streamlit secrets first, fallback to environment variables
+try:
+    DB_CONFIG = {
+        'host': st.secrets["database"]["host"],
+        'user': st.secrets["database"]["user"],
+        'password': st.secrets["database"]["password"],
+        'database': st.secrets["database"]["database"],
+        'port': st.secrets["database"].get("port", 3306)
+    }
+except Exception:
+    # Fallback to environment variables or defaults for local development
+    DB_CONFIG = {
+        'host': os.getenv('DB_HOST', 'localhost'),
+        'user': os.getenv('DB_USER', 'root'),
+        'password': os.getenv('DB_PASSWORD', ''),
+        'database': os.getenv('DB_NAME', 'interior_designer_app_prisha_csia'),
+        'port': int(os.getenv('DB_PORT', 3306))
+    }
 
 # =====================================================
 # FILE STORAGE PATHS
@@ -31,9 +43,16 @@ WHITEBOARD_DIR = os.path.join(BASE_UPLOAD_DIR, 'projects', '{project_id}', 'whit
 # =====================================================
 # SESSION & COOKIE SETTINGS
 # =====================================================
-COOKIE_NAME = 'interior_design_session'
-COOKIE_KEY = 'interior_design_secret_key_change_in_production'  # Change this in production!
-COOKIE_EXPIRY_DAYS = 30
+# Try to load from Streamlit secrets first, fallback to defaults
+try:
+    COOKIE_NAME = st.secrets["session"]["cookie_name"]
+    COOKIE_KEY = st.secrets["session"]["cookie_key"]
+    COOKIE_EXPIRY_DAYS = st.secrets["session"]["cookie_expiry_days"]
+except Exception:
+    # Fallback to environment variables or defaults
+    COOKIE_NAME = os.getenv('COOKIE_NAME', 'interior_design_session')
+    COOKIE_KEY = os.getenv('COOKIE_KEY', 'interior_design_secret_key_change_in_production')
+    COOKIE_EXPIRY_DAYS = int(os.getenv('COOKIE_EXPIRY_DAYS', 30))
 
 # =====================================================
 # APPLICATION SETTINGS
