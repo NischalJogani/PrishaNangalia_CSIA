@@ -60,14 +60,14 @@ def verify_password(password, hashed_password):
 def generate_client_code():
     """
     Generate a unique random client access code
-    Format: 6 uppercase letters and digits (e.g., ABC123)
+    Format: 8 uppercase letters and digits (e.g., ABC12345)
     
     Returns:
         Unique client code string
     """
     while True:
-        # Generate random code
-        code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+        # Generate random 8-character code
+        code = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
         
         # Check if code already exists
         existing = get_records('users', 'client_code = %s', (code,))

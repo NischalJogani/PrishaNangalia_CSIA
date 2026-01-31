@@ -19,11 +19,23 @@ def get_db_connection():
         connection object or None if connection fails
     """
     try:
+        print(f"Attempting to connect to database...")
+        print(f"Host: {config.DB_CONFIG['host']}")
+        print(f"User: {config.DB_CONFIG['user']}")
+        print(f"Database: {config.DB_CONFIG['database']}")
+        print(f"Password set: {'Yes' if config.DB_CONFIG['password'] else 'No'}")
+        
         connection = mysql.connector.connect(**config.DB_CONFIG)
         if connection.is_connected():
+            print("✓ Database connection successful!")
             return connection
     except Error as e:
-        print(f"Database connection error: {e}")
+        print(f"❌ Database connection error: {e}")
+        print(f"Error Code: {e.errno if hasattr(e, 'errno') else 'N/A'}")
+        print(f"SQL State: {e.sqlstate if hasattr(e, 'sqlstate') else 'N/A'}")
+        return None
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
         return None
 
 @contextmanager

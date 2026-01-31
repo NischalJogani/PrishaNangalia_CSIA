@@ -26,7 +26,7 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255),  -- Only for designers, NULL for clients
     role ENUM('designer', 'client') NOT NULL,
-    client_code VARCHAR(20) UNIQUE,  -- Only for clients, auto-generated unique code
+    client_code VARCHAR(20) UNIQUE,  -- 8-character code for clients, NULL for designers
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_client_code (client_code)

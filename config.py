@@ -16,10 +16,11 @@ try:
         'user': st.secrets["database"]["user"],
         'password': st.secrets["database"]["password"],
         'database': st.secrets["database"]["database"],
-        'port': st.secrets["database"].get("port", 3306)
+        'port': int(st.secrets["database"].get("port", 3306))
     }
-except Exception:
+except Exception as e:
     # Fallback to environment variables or defaults for local development
+    print(f"Warning: Could not load secrets, using environment variables. Error: {e}")
     DB_CONFIG = {
         'host': os.getenv('DB_HOST', 'localhost'),
         'user': os.getenv('DB_USER', 'root'),

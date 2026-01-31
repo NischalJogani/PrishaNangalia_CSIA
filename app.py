@@ -240,11 +240,27 @@ def show_setup_page():
         st.markdown("""
         ### Prerequisites:
         1. MySQL server should be running
-        2. Update database credentials in `config.py`
+        2. Credentials should be in `.streamlit/secrets.toml` file
         3. Click the button below to initialize the database
         
+        ### Current Configuration:
+        """)
+        
+        # Show current config (without password)
+        try:
+            st.code(f"""
+Host: {config.DB_CONFIG.get('host', 'N/A')}
+User: {config.DB_CONFIG.get('user', 'N/A')}
+Database: {config.DB_CONFIG.get('database', 'N/A')}
+Port: {config.DB_CONFIG.get('port', 'N/A')}
+Password: {'***' if config.DB_CONFIG.get('password') else 'NOT SET'}
+            """)
+        except Exception as e:
+            st.error(f"Error reading config: {e}")
+        
+        st.markdown("""
         ### What this will do:
-        - Create the database
+        - Create the database (if needed)
         - Create all necessary tables
         - Set up the schema
         """)
@@ -254,26 +270,62 @@ def show_setup_page():
     with col2:
         if st.button("🚀 Initialize Database", type="primary", use_container_width=True):
             with st.spinner("Setting up database..."):
+                # First check connection
+                from database import get_db_connection
+                test_conn = get_db_connection()
+                if not test_conn:
+                    show_error("❌ Cannot connect to MySQL server!")
+                    st.error("Please check:")
+                    st.markdown("""
+                    1. **MySQL is running** - Start your MySQL service
+                    2. **Credentials are correct** in `.streamlit/secrets.toml`
+                    3. **Database exists** - Create it manually if needed:
+                       ```sql
+                       CREATE DATABASE interior_designer_app_prisha_csia;
+                       ```
+                    """)
+                    
+                    # Show troubleshooting
+                    with st.expander("🔍 Troubleshooting"):
+                        st.markdown("""
+                        **Check MySQL Service:**
+                        - Windows: Services → MySQL → Start
+                        - Mac: `brew services start mysql`
+                        - Linux: `sudo systemctl start mysql`
+                        
+                        **Test Connection Manually:**
+                        ```bash
+                        mysql -u root -p
+                        ```
+                        """)
+                    st.stop()
+                else:
+                    test_conn.close()
+                    show_success("✓ MySQL connection successful!")
+                
                 # Initialize database
                 if initialize_database():
-                    show_success("Database created successfully!")
+                    show_success("✓ Database created/verified!")
                     
                     # Execute schema
                     schema_path = os.path.join(os.path.dirname(__file__), 'database_schema.sql')
                     if execute_schema_file(schema_path):
-                        show_success("Database schema created successfully!")
+                        show_success("✓ Database schema created successfully!")
                         st.balloons()
                         
                         # Create upload directories
                         config.create_upload_directories()
-                        show_success("Upload directories created!")
+                        show_success("✓ Upload directories created!")
                         
                         st.session_state['db_initialized'] = True
                         st.info("✓ Setup complete! Please refresh the page to start using the application.")
+                        
+                        if st.button("🔄 Refresh Now"):
+                            st.rerun()
                     else:
-                        show_error("Failed to create database schema")
+                        show_error("❌ Failed to create database schema")
                 else:
-                    show_error("Failed to create database. Please check your MySQL connection.")
+                    show_error("❌ Failed to create database. Please check your MySQL connection.")
 
 # =====================================================
 # MAIN ENTRY POINT
